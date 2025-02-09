@@ -47,61 +47,84 @@ export class CharacterControls {
     public switchRunToggle() {
         this.toggleRun = !this.toggleRun
     }
+    public moveToLeaderboard() {
+        const leaderboardPosition = new THREE.Vector3(15, 5, 0); // Position of the leaderboard in 3D space
+        const directionToLeaderboard = leaderboardPosition.clone().sub(this.model.position).normalize();
+        
+        const velocity = this.toggleRun ? this.runVelocity : this.walkVelocity;
+        const moveX = directionToLeaderboard.x * velocity * 0.016; // Multiply by delta time
+        const moveZ = directionToLeaderboard.z * velocity * 0.016;
+    
+        // Move the character
+        this.model.position.x += moveX;
+        this.model.position.z += moveZ;
+    
+        // Update camera target
+        this.updateCameraTarget(moveX, moveZ);
+    }
+    
 
     public update(delta: number, keysPressed: any) {
-        const directionPressed = DIRECTIONS.some(key => keysPressed[key] == true)
-
-        var play = '';
+        const directionPressed = DIRECTIONS.some(key => keysPressed[key] == true);
+    
+        var play = 'Walk';
         if (directionPressed && this.toggleRun) {
-            play = 'Run'
+            play = 'Run';
         } else if (directionPressed) {
-            play = 'Walk'
+            play = 'Walk';
         } else {
-            play = 'Idle'
+            play = 'Idle';
         }
-
+    
         if (this.currentAction != play) {
-            const toPlay = this.animationsMap.get(play)
-            const current = this.animationsMap.get(this.currentAction)
-
-            current.fadeOut(this.fadeDuration)
-            toPlay.reset().fadeIn(this.fadeDuration).play();
-
-            this.currentAction = play
+            console.log('Available animations:', Array.from(this.animationsMap.keys()));
+            console.log('Current action:', this.currentAction);
+            console.log('Next action:', play);
+    
+            const toPlay = this.animationsMap.get(play);
+            const current = this.animationsMap.get(this.currentAction);
+    
+            if (!current) {
+                console.error(`Current animation '${this.currentAction}' is missing!`);
+            }
+            if (!toPlay) {
+                console.error(`Next animation '${play}' is missing!`);
+            }
+    
+            current?.fadeOut(this.fadeDuration);
+            toPlay?.reset().fadeIn(this.fadeDuration).play();
+    
+            this.currentAction = play;
         }
-
-        this.mixer.update(delta)
-
+    
+        this.mixer.update(delta);
+    
         if (this.currentAction == 'Run' || this.currentAction == 'Walk') {
-            // calculate towards camera direction
             var angleYCameraDirection = Math.atan2(
-                    (this.camera.position.x - this.model.position.x), 
-                    (this.camera.position.z - this.model.position.z))
-            // diagonal movement angle offset
-            var directionOffset = this.directionOffset(keysPressed)
-
-            // rotate model
-            this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, angleYCameraDirection + directionOffset)
-            this.model.quaternion.rotateTowards(this.rotateQuarternion, 0.2)
-
-            // calculate direction
-            this.camera.getWorldDirection(this.walkDirection)
-            this.walkDirection.y = 0
-            this.walkDirection.normalize()
-            this.walkDirection.applyAxisAngle(this.rotateAngle, directionOffset)
-
-            // run/walk velocity
-            const velocity = this.currentAction == 'Run' ? this.runVelocity : this.walkVelocity
-
-            // move model & camera
-            const moveX = this.walkDirection.x * velocity * delta
-            const moveZ = this.walkDirection.z * velocity * delta
-            this.model.position.x += moveX
-            this.model.position.z += moveZ
-            this.updateCameraTarget(moveX, moveZ)
+                (this.camera.position.x - this.model.position.x),
+                (this.camera.position.z - this.model.position.z)
+            );
+            var directionOffset = this.directionOffset(keysPressed);
+    
+            this.rotateQuarternion.setFromAxisAngle(this.rotateAngle, angleYCameraDirection + directionOffset);
+            this.model.quaternion.rotateTowards(this.rotateQuarternion, 0.2);
+    // calculate direction and invert it
+this.camera.getWorldDirection(this.walkDirection);
+this.walkDirection.y = 0;
+this.walkDirection.normalize();
+this.walkDirection.negate(); // Invert direction to move forward
+this.walkDirection.applyAxisAngle(this.rotateAngle, directionOffset);
+    
+            const velocity = this.currentAction == 'Run' ? this.runVelocity : this.walkVelocity;
+    
+            const moveX = this.walkDirection.x * velocity * delta;
+            const moveZ = this.walkDirection.z * velocity * delta;
+            this.model.position.x += moveX;
+            this.model.position.z += moveZ;
+            this.updateCameraTarget(moveX, moveZ);
         }
     }
-
+    
     private updateCameraTarget(moveX: number, moveZ: number) {
         // move camera
         this.camera.position.x += moveX
@@ -140,3 +163,4 @@ export class CharacterControls {
         return directionOffset
     }
 }
+

@@ -5,6 +5,12 @@
       "noImplicitAny": true,
       "module": "CommonJS",
       "target": "es5",
-      "allowJs": true
-    }
+      "allowJs": true,
+      "moduleResolution": "Node" ,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+        "skipLibCheck": true
+    
+}
 }
