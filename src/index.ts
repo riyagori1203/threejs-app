@@ -247,12 +247,86 @@ function animate() {
         characterControls.update(mixerUpdateDelta, keysPressed);
         checkProximity(leaderboardPosition, redirectToLeaderboardPage);
         checkProximity(taskAreaPosition, openCarbonFootprintPopup);
+        checkProximity(rewardsAreaPosition, openRewardsBoard); // NEW 
     }
     orbitControls.update();
     updateBoardsPosition();
+    
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
 }
+animate();
+// 🎁 REWARDS BOARD (Enhanced)
+const rewardsCanvas = document.createElement('canvas');
+const rewardsCtx = rewardsCanvas.getContext('2d')!;
+rewardsCanvas.width = 512;
+rewardsCanvas.height = 256;
+
+leaderboardCanvas.width = 512;
+leaderboardCanvas.height = 256;
+
+function updateRewardsTexture() {
+    rewardsCtx.clearRect(0, 0, rewardsCanvas.width, rewardsCanvas.height);
+
+    // Create gradient background
+    const gradient = rewardsCtx.createLinearGradient(0, 0, 0, rewardsCanvas.height);
+    gradient.addColorStop(0, "#3b3b3b"); // Dark Gray
+    gradient.addColorStop(1, "#1a1a1a"); // Almost Black
+    
+    rewardsCtx.fillStyle = gradient;
+    rewardsCtx.fillRect(0, 0, rewardsCanvas.width, rewardsCanvas.height);
+
+    // Add gold border
+    rewardsCtx.strokeStyle = "gold";
+    rewardsCtx.lineWidth = 6;
+    rewardsCtx.strokeRect(0, 0, rewardsCanvas.width, rewardsCanvas.height);
+
+    // Add text content
+    rewardsCtx.fillStyle = "white";
+    rewardsCtx.font = "bold 40px Arial";
+    rewardsCtx.fillText("🎁 Rewards Board", 100, 50);
+
+    rewardsCtx.font = "28px Arial";
+    rewardsCtx.fillStyle = "#FFD700";
+    rewardsCtx.fillText("1. Gift Card: 50 points", 80, 120);
+
+    rewardsCtx.fillStyle = "#C0C0C0";
+    rewardsCtx.fillText("2. Discount Code: 30 points", 80, 160);
+
+    rewardsCtx.fillStyle = "#CD7F32";
+    rewardsCtx.fillText("3. Badge: 20 points", 80, 200);
+
+    // Mark the rewards texture as needing an update
+    rewardsTexture.needsUpdate = true;
+}
+
+
+const rewardsTexture = new THREE.CanvasTexture(rewardsCanvas);
+const rewardsMaterial = new THREE.MeshBasicMaterial({ map: rewardsTexture, side: THREE.DoubleSide });
+
+const rewardsGeometry = new THREE.PlaneGeometry(5, 2.5);
+const rewardsBoard = new THREE.Mesh(rewardsGeometry, rewardsMaterial);
+rewardsBoard.position.set(0, 3, -15); // Adjusted position
+rewardsBoard.rotation.x = -0.1;
+
+scene.add(rewardsBoard);
+updateRewardsTexture();
+
+// 🔄 AUTO ORIENT REWARDS BOARD TO FACE CAMERA
+function updateRewardsPosition() {
+    rewardsBoard.lookAt(camera.position);
+    
+}
+
+// You can call `checkProximity` for the rewards area if needed
+const rewardsAreaPosition = new THREE.Vector3(0, 0, -15); // Must match rewardsBoard.position
+function openRewardsBoard() {
+    alert("🎁 Check your Rewards!");
+    setTimeout(() => page('/rewards'), 20);
+}
+
+// Update the animate function to check proximity to the rewards board
+
 animate();
 
 // 🌍 WINDOW RESIZE HANDLING

@@ -11,30 +11,55 @@ export function initializeRoutes() {
                     <div class="rank">3. Player 3 - 720 points</div>
                 </div>
             </div>
+            <style>
+                .leaderboard {
+                    min-height: 100vh;
+                    background-color: #f5f6fa;
+                    padding: 40px 20px;
+                }
+
+                .leaderboard h1 {
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                }
+
+                .rankings {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                }
+
+                .rank {
+                    background: white;
+                    border-radius: 8px;
+                    padding: 15px;
+                    margin: 10px;
+                    width: 300px;
+                    text-align: center;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    font-size: 1.2em;
+                    color: #2c3e50;
+                }
+            </style>
         `;
     });
 
     page('/task', () => {
-        // Clear all content from the body
         document.body.innerHTML = '';
     
-        // Recreate the #app container
         const appElement = document.createElement('div');
         appElement.id = 'app';
         document.body.appendChild(appElement);
     
-        // Set background properties
         document.body.style.backgroundImage = 'none';
-        document.body.style.backgroundColor = '#fff'; // or any color you prefer
+        document.body.style.backgroundColor = '#fff';
     
-        // Insert the new UI into #app
-        appElement.innerHTML = 
-            `<div class="task-container">
+        appElement.innerHTML = `
+            <div class="task-container">
                 <div class="task">
                     <h1>Carbon Footprint Survey</h1>
                     <form id="carbonForm" class="carbon-form">
-                        <input type="text" name="username" placeholder="Your Name" required>
-                        
                         <div class="form-section">
                             <h3>🚗 Transportation</h3>
                             <select name="commute_mode" required>
@@ -161,13 +186,8 @@ export function initializeRoutes() {
                 .submit-btn:hover {
                     background-color: #219a52;
                 }
-                h1 {
-                    text-align: center;
-                    color: #2c3e50;
-                    margin-bottom: 30px;
-                }
             </style>`;
-    
+
         document.getElementById('carbonForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.currentTarget as HTMLFormElement;
@@ -200,7 +220,7 @@ export function initializeRoutes() {
                     train_trips_per_month: parseInt(elements.train_trips_per_month.value) || 0
                 };
 
-                const response = await fetch('http://localhost:5000/calculate', {
+                const response = await fetch('http://localhost:8000/calculate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
@@ -226,7 +246,60 @@ export function initializeRoutes() {
             }
         });
     });
-    
+
+    page('/rewards', () => {
+        document.getElementById('app').innerHTML = `
+            <div class="rewards">
+                <h1>Rewards</h1>
+                <div class="reward-item">
+                    <h3>🌟 Bronze Medal</h3>
+                    <p>Earned by completing your first task!</p>
+                </div>
+                <div class="reward-item">
+                    <h3>🌟 Silver Medal</h3>
+                    <p>Earned by completing 5 tasks!</p>
+                </div>
+                <div class="reward-item">
+                    <h3>🌟 Gold Medal</h3>
+                    <p>Earned by completing 10 tasks!</p>
+                </div>
+            </div>
+            <style>
+                .rewards {
+                    min-height: 100vh;
+                    background-color: #f5f6fa;
+                    padding: 40px 20px;
+                }
+
+                .rewards h1 {
+                    text-align: center;
+                    color: #2c3e50;
+                    margin-bottom: 30px;
+                }
+
+                .reward-item {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background: white;
+                    border-radius: 10px;
+                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                    padding: 20px;
+                    margin-bottom: 20px;
+                }
+
+                .reward-item h3 {
+                    margin-top: 0;
+                    color: #27ae60;
+                    font-size: 1.5em;
+                }
+
+                .reward-item p {
+                    color: #2c3e50;
+                    font-size: 1.1em;
+                }
+            </style>
+        `;
+    });
 
     page.start();
 }
