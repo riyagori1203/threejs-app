@@ -95,23 +95,25 @@ new GLTFLoader().load('models/RobotExpressive.glb', function (gltf) {
     characterControls = new CharacterControls(model, mixer, animationsMap, orbitControls, camera, 'Idle');
 });
 
-// TARGET AREAS
-const leaderboardPosition = new THREE.Vector3(0, 0, -5);
-const taskAreaPosition = new THREE.Vector3(18, 0, -25);
+// 🎯 TARGET POSITIONS
+const leaderboardPosition = new THREE.Vector3(0, 1, -5);
+const taskAreaPosition = new THREE.Vector3(18, 1, -25);
+const rewardsPosition = new THREE.Vector3(-18, 1, -25);
+const weeklyChallengePosition = new THREE.Vector3(0, 1, 10);
 const triggerDistance = 2;
 
-// PROXIMITY CHECK
+// 🎯 PROXIMITY CHECK
 function checkProximity(targetPosition: THREE.Vector3, action: () => void) {
     if (!characterControls) return;
     const characterPosition = characterControls.model.position;
     const distance = characterPosition.distanceTo(targetPosition);
     
-    if (distance < triggerDistance) {
+    if (distance <= triggerDistance) {
         action();
     }
 }
 
-// POP-UP FUNCTIONALITIES
+// 🚀 REDIRECTION FUNCTIONS
 function openCarbonFootprintPopup() {
     alert("🌍 Task of the Day: Track your Carbon Footprint!");
     setTimeout(() => page('/task'), 20);
@@ -121,106 +123,66 @@ function redirectToLeaderboardPage() {
     page('/leaderboard');
 }
 
-// 🏆 LEADERBOARD (Enhanced)
-const leaderboardCanvas = document.createElement('canvas');
-const leaderboardCtx = leaderboardCanvas.getContext('2d')!;
-leaderboardCanvas.width = 512;
-leaderboardCanvas.height = 256;
-
-function updateLeaderboardTexture() {
-    leaderboardCtx.clearRect(0, 0, leaderboardCanvas.width, leaderboardCanvas.height);
-
-    const gradient = leaderboardCtx.createLinearGradient(0, 0, 0, leaderboardCanvas.height);
-    gradient.addColorStop(0, "#3b3b3b"); // Dark Gray
-    gradient.addColorStop(1, "#1a1a1a"); // Almost Black
-    
-    leaderboardCtx.fillStyle = gradient;
-    leaderboardCtx.fillRect(0, 0, leaderboardCanvas.width, leaderboardCanvas.height);
-
-    leaderboardCtx.strokeStyle = "gold";
-    leaderboardCtx.lineWidth = 6;
-    leaderboardCtx.strokeRect(0, 0, leaderboardCanvas.width, leaderboardCanvas.height);
-
-    leaderboardCtx.fillStyle = "white";
-    leaderboardCtx.font = "bold 40px Arial";
-    leaderboardCtx.fillText("🏆 Leaderboard", 140, 50);
-
-    leaderboardCtx.font = "28px Arial";
-    leaderboardCtx.fillStyle = "#FFD700";
-    leaderboardCtx.fillText("1. Player1: 100", 140, 120);
-
-    leaderboardCtx.fillStyle = "#C0C0C0";
-    leaderboardCtx.fillText("2. Player2: 80", 140, 160);
-
-    leaderboardCtx.fillStyle = "#CD7F32";
-    leaderboardCtx.fillText("3. Player3: 60", 140, 200);
-
-    leaderboardTexture.needsUpdate = true;
+function redirectToRewardsPage() {
+    page('/rewards');
 }
 
-const leaderboardTexture = new THREE.CanvasTexture(leaderboardCanvas);
-const leaderboardMaterial = new THREE.MeshBasicMaterial({ map: leaderboardTexture, side: THREE.DoubleSide });
-
-const leaderboardGeometry = new THREE.PlaneGeometry(5, 2.5);
-const leaderboard = new THREE.Mesh(leaderboardGeometry, leaderboardMaterial);
-leaderboard.position.set(0, 3, -5);
-leaderboard.rotation.x = -0.1;
-
-scene.add(leaderboard);
-updateLeaderboardTexture();
-
-// 🌍 TASK OF THE DAY (Enhanced)
-const taskCanvas = document.createElement('canvas');
-const taskCtx = taskCanvas.getContext('2d')!;
-taskCanvas.width = 512;
-taskCanvas.height = 256;
-
-function updateTaskTexture() {
-    taskCtx.clearRect(0, 0, taskCanvas.width, taskCanvas.height);
-
-    // Gradient background (same as leaderboard)
-    const gradient = taskCtx.createLinearGradient(0, 0, 0, taskCanvas.height);
-    gradient.addColorStop(0, "#3b3b3b"); // Dark Gray
-    gradient.addColorStop(1, "#1a1a1a"); // Almost Black
-    
-    taskCtx.fillStyle = gradient;
-    taskCtx.fillRect(0, 0, taskCanvas.width, taskCanvas.height);
-
-    // Gold border
-    taskCtx.strokeStyle = "gold";
-    taskCtx.lineWidth = 6;
-    taskCtx.strokeRect(0, 0, taskCanvas.width, taskCanvas.height);
-
-    // Text & Formatting
-    taskCtx.fillStyle = "white";
-    taskCtx.font = "bold 40px Arial";
-    taskCtx.fillText("🌍 Task of the Day", 100, 50);
-
-    taskCtx.font = "28px Arial";
-    taskCtx.fillStyle = "#FFD700";
-    taskCtx.fillText("🌱 Track your Carbon Footprint", 50, 120);
-    
-    taskCtx.fillStyle = "#C0C0C0";
-    taskCtx.fillText("📉 Reduce your impact!", 80, 160);
-
-    taskTexture.needsUpdate = true;
+// 📌 Weekly Challenge Popup Function
+function openWeeklyChallengePopup() {
+    alert("🌱 Weekly Challenge: No Plastic Week! 🌍");
 }
 
-const taskTexture = new THREE.CanvasTexture(taskCanvas);
-const taskMaterial = new THREE.MeshBasicMaterial({ map: taskTexture, side: THREE.DoubleSide });
+// 🏆 BOARDS CREATION
+const leaderboard = createBoard("🏆 Leaderboard", ["1. Player1: 100", "2. Player2: 80", "3. Player3: 60"], leaderboardPosition);
+const taskBoard = createBoard("🌍 Task of the Day", ["🌱 Track your Carbon Footprint", "📉 Reduce your impact!"], taskAreaPosition);
+const rewardsBoard = createBoard("🎁 Rewards", ["⭐ Points: 1250", "🎉 Tap to Redeem!"], rewardsPosition);
+const weeklyChallengeBoard = createBoard("🌱 Weekly Challenge", ["No Plastic Week!", "♻️ Reduce Waste!"], weeklyChallengePosition);
 
-const taskGeometry = new THREE.PlaneGeometry(5, 2.5);
-const taskBoard = new THREE.Mesh(taskGeometry, taskMaterial);
-taskBoard.position.set(18, 3, -25);
-taskBoard.rotation.x = -0.1;
+function createBoard(title: string, content: string[], position: THREE.Vector3) {
+    const boardCanvas = document.createElement('canvas');
+    const boardCtx = boardCanvas.getContext('2d')!;
+    boardCanvas.width = 512;
+    boardCanvas.height = 256;
 
-scene.add(taskBoard);
-updateTaskTexture();
+    boardCtx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+    const gradient = boardCtx.createLinearGradient(0, 0, 0, boardCanvas.height);
+    gradient.addColorStop(0, "#3b3b3b");
+    gradient.addColorStop(1, "#1a1a1a");
 
-// 🔄 AUTO ORIENT TASK BOARD & LEADERBOARD TO FACE CAMERA
+    boardCtx.fillStyle = gradient;
+    boardCtx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+    boardCtx.strokeStyle = "gold";
+    boardCtx.lineWidth = 6;
+    boardCtx.strokeRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+    boardCtx.fillStyle = "white";
+    boardCtx.font = "bold 40px Arial";
+    boardCtx.fillText(title, 100, 50);
+
+    boardCtx.font = "28px Arial";
+    content.forEach((line, index) => {
+        boardCtx.fillStyle = index === 0 ? "#FFD700" : "#C0C0C0";
+        boardCtx.fillText(line, 50, 120 + index * 40);
+    });
+
+    const boardTexture = new THREE.CanvasTexture(boardCanvas);
+    const boardMaterial = new THREE.MeshBasicMaterial({ map: boardTexture, side: THREE.DoubleSide });
+    const boardGeometry = new THREE.PlaneGeometry(5, 2.5);
+    const boardMesh = new THREE.Mesh(boardGeometry, boardMaterial);
+    boardMesh.position.copy(position);
+    boardMesh.rotation.x = -0.1;
+
+    scene.add(boardMesh);
+    return boardMesh;
+}
+
+// 🔄 AUTO ORIENT BOARDS TO FACE CAMERA
 function updateBoardsPosition() {
     leaderboard.lookAt(camera.position);
     taskBoard.lookAt(camera.position);
+    rewardsBoard.lookAt(camera.position);
+    weeklyChallengeBoard.lookAt(camera.position);
 }
 
 // 🎮 CONTROL KEYS & MOVEMENT HANDLING
@@ -238,7 +200,7 @@ document.addEventListener('keyup', (event) => {
     keysPressed[event.key.toLowerCase()] = false;
 }, false);
 
-// 🔄 ANIMATE FUNCTION (Handles Character Movement & Board Rotation)
+// 🔄 ANIMATION FUNCTION
 const clock = new THREE.Clock();
 
 function animate() {
@@ -247,6 +209,8 @@ function animate() {
         characterControls.update(mixerUpdateDelta, keysPressed);
         checkProximity(leaderboardPosition, redirectToLeaderboardPage);
         checkProximity(taskAreaPosition, openCarbonFootprintPopup);
+        checkProximity(rewardsPosition, redirectToRewardsPage);
+        checkProximity(weeklyChallengePosition, openWeeklyChallengePopup);
     }
     orbitControls.update();
     updateBoardsPosition();
@@ -254,10 +218,3 @@ function animate() {
     requestAnimationFrame(animate);
 }
 animate();
-
-// 🌍 WINDOW RESIZE HANDLING
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
