@@ -15,6 +15,8 @@ export function initializeRoutes() {
     });
 
     page('/task', () => {
+        document.body.style.backgroundImage = 'none';
+    document.body.style.backgroundColor = '#fff'; // or any color you prefer
         document.getElementById('app').innerHTML = `
             <div class="task-container">
                 <div class="task">
