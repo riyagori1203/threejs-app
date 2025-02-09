@@ -200,7 +200,7 @@ export function initializeRoutes() {
                     train_trips_per_month: parseInt(elements.train_trips_per_month.value) || 0
                 };
 
-                const response = await fetch('http://localhost:5000/calculate', {
+                const response = await fetch('http://localhost:8000/calculate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
