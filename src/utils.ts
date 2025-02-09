@@ -34,7 +34,9 @@ export class KeyDisplay {
 
         this.map.forEach( (v, _) => {
             document.body.append(v)
-        })
+        });
+
+        this.hideKeys();
     }
 
     public updatePosition() {
@@ -51,6 +53,11 @@ export class KeyDisplay {
         this.map.get(SHIFT).style.left = `50px`;
         
     }
+    public hideKeys() {
+        this.map.forEach((v, _) => {
+            v.style.display = 'none'; // Hides the keys when the page loads
+        });
+    }
 
     public down (key: string) {
         if (this.map.get(key.toLowerCase())) {
@@ -63,5 +70,7 @@ export class KeyDisplay {
             this.map.get(key.toLowerCase()).style.color = 'blue'
         }
     }
+    
+    
 
 }
