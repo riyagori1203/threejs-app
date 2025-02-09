@@ -3,6 +3,14 @@ import { CharacterControls } from './characterControls';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import page from 'page';
+import { initializeRoutes } from './routes';
+initializeRoutes();
+
+// import initRoutes from './routes';
+
+// initRoutes();
+
 
 // SCENE
 const scene = new THREE.Scene();
@@ -79,19 +87,17 @@ function checkProximity(targetPosition: THREE.Vector3, action: () => void) {
 
 // OPEN CARBON FOOTPRINT POP-UP
 function openCarbonFootprintPopup() {
-    console.log("Opening Carbon Footprint Popup!");  // Debug log
+    console.log("Opening Carbon Footprint Popup!");
     alert("🌍 Task of the Day: Track your Carbon Footprint!");
-    window.location.href = "http://10.155.60.158:8080/"; // Replace with actual URL
-    // Redirect after 2 seconds
     setTimeout(() => {
-        window.location.href = "http://10.155.60.158:8080/"; // Replace with actual URL
-    }, 2000); // Wait for 2 seconds before redirecting
+        page('/task');  // Navigate using page.js after showing the popup
+    }, 20);
 }
 
 // REDIRECT TO LEADERBOARD PAGE
+
 function redirectToLeaderboardPage() {
-    console.log("Redirecting to leaderboard!");  // Debug log
-    window.location.href = "https://your-leaderboard-page.com"; // Replace with actual URL
+    page('/leaderboard');
 }
 
 // LEADERBOARD (3D Textured Canvas)
