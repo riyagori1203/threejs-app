@@ -5,6 +5,7 @@ const src = path.resolve(__dirname, 'src');
 module.exports = {
   mode: 'development',
   entry: './src/index.ts',
+  target:'web',
   devtool: 'inline-source-map',
   module: {
     rules: [
@@ -20,6 +21,7 @@ module.exports = {
   },
   output: {
     filename: 'index.js',
+    globalObject: 'window',
     path: src
   },
   devServer: {
