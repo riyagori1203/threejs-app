@@ -49,19 +49,25 @@ export class KeyDisplay {
         this.map.get(S).style.left = `300px`;
         this.map.get(D).style.left = `400px`;
         this.map.get(SHIFT).style.left = `50px`;
-        
     }
 
-    public down (key: string) {
-        if (this.map.get(key.toLowerCase())) {
-            this.map.get(key.toLowerCase()).style.color = 'red'
+    public down(key: string) {
+        const lowerKey = key.toLowerCase();
+        const element = this.map.get(lowerKey);  // Get the HTMLDivElement
+        if (element) {
+            element.style.color = 'red';  // Safely access style if the element exists
+        } else {
+            console.error(`Invalid key pressed: ${key}`);
         }
     }
-
-    public up (key: string) {
-        if (this.map.get(key.toLowerCase())) {
-            this.map.get(key.toLowerCase()).style.color = 'blue'
+    
+    public up(key: string) {
+        const lowerKey = key.toLowerCase();
+        const element = this.map.get(lowerKey);  // Get the HTMLDivElement
+        if (element) {
+            element.style.color = 'blue';  // Safely access style if the element exists
+        } else {
+            console.error(`Invalid key released: ${key}`);
         }
     }
-
 }

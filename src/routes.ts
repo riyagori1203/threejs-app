@@ -16,12 +16,14 @@ export function initializeRoutes() {
 
     page('/task', () => {
         document.body.style.backgroundImage = 'none';
-    document.body.style.backgroundColor = '#fff'; // or any color you prefer
+        document.body.style.backgroundColor = '#fff';
         document.getElementById('app').innerHTML = `
             <div class="task-container">
                 <div class="task">
                     <h1>Carbon Footprint Survey</h1>
                     <form id="carbonForm" class="carbon-form">
+                        <input type="text" name="username" placeholder="Your Name" required>
+                        
                         <div class="form-section">
                             <h3>🚗 Transportation</h3>
                             <select name="commute_mode" required>
@@ -87,6 +89,7 @@ export function initializeRoutes() {
 
                         <button type="submit" class="submit-btn">Track My Carbon Footprint</button>
                     </form>
+                    <div id="resultContainer"></div>
                 </div>
             </div>
             <style>
@@ -152,12 +155,89 @@ export function initializeRoutes() {
                     color: #2c3e50;
                     margin-bottom: 30px;
                 }
+                #resultContainer {
+                    margin-top: 20px;
+                    padding: 20px;
+                    background: #e8f5e9;
+                    border-radius: 8px;
+                    border: 1px solid #c8e6c9;
+                }
+                #resultContainer h3 {
+                    color: #2e7d32;
+                    margin-top: 0;
+                }
+                #resultContainer p {
+                    font-size: 16px;
+                    line-height: 1.6;
+                    margin: 10px 0;
+                }
+                .error-message {
+                    color: #dc3545;
+                    padding: 10px;
+                    background: #ffeef0;
+                    border: 1px solid #ffdce0;
+                    border-radius: 4px;
+                    margin-top: 10px;
+                }
             </style>
         `;
 
-        document.getElementById('carbonForm')?.addEventListener('submit', (e) => {
+        document.getElementById('carbonForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
-            alert('Thank you for submitting your carbon footprint data!');
+            const form = e.currentTarget as HTMLFormElement;
+            const resultContainer = document.getElementById('resultContainer')!;
+
+            try {
+                const elements = form.elements as unknown as {
+                    commute_mode: HTMLSelectElement;
+                    commute_distance: HTMLInputElement;
+                    food_type: HTMLSelectElement;
+                    takeout_packaging: HTMLSelectElement;
+                    pages_used: HTMLInputElement;
+                    reusable_items: HTMLInputElement;
+                    participation: RadioNodeList;
+                    shopping_habits: RadioNodeList;
+                    flights_per_month: HTMLInputElement;
+                    train_trips_per_month: HTMLInputElement;
+                };
+
+                const formData = {
+                    commute_mode: elements.commute_mode.value,
+                    commute_distance: parseFloat(elements.commute_distance.value),
+                    food_type: elements.food_type.value,
+                    takeout_packaging: elements.takeout_packaging.value,
+                    pages_used: parseInt(elements.pages_used.value) || 0,
+                    reusable_items: parseInt(elements.reusable_items.value) || 0,
+                    participation: elements.participation.value,
+                    shopping_habits: elements.shopping_habits.value,
+                    flights_per_month: parseInt(elements.flights_per_month.value) || 0,
+                    train_trips_per_month: parseInt(elements.train_trips_per_month.value) || 0
+                };
+
+                const response = await fetch('http://localhost:5000/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) throw new Error('Server response not OK');
+                
+                const data = await response.json();
+                resultContainer.innerHTML = `
+                    <h3>Your Carbon Footprint:</h3>
+                    <p>${data.carbon}</p>
+                    <h3>Daily Challenge:</h3>
+                    <p>${data.challenge}</p>
+                `;
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                resultContainer.innerHTML = `
+                    <div class="error-message">
+                        Error: ${error instanceof Error ? error.message : 'Failed to calculate footprint'}
+                    </div>
+                `;
+            }
         });
     });
 
