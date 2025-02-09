@@ -15,10 +15,21 @@ export function initializeRoutes() {
     });
 
     page('/task', () => {
+        // Clear all content from the body
+        document.body.innerHTML = '';
+    
+        // Recreate the #app container
+        const appElement = document.createElement('div');
+        appElement.id = 'app';
+        document.body.appendChild(appElement);
+    
+        // Set background properties
         document.body.style.backgroundImage = 'none';
-        document.body.style.backgroundColor = '#fff';
-        document.getElementById('app').innerHTML = `
-            <div class="task-container">
+        document.body.style.backgroundColor = '#fff'; // or any color you prefer
+    
+        // Insert the new UI into #app
+        appElement.innerHTML = 
+            `<div class="task-container">
                 <div class="task">
                     <h1>Carbon Footprint Survey</h1>
                     <form id="carbonForm" class="carbon-form">
@@ -37,7 +48,7 @@ export function initializeRoutes() {
                             </select>
                             <input type="number" name="commute_distance" placeholder="Daily Commute Distance (miles)" required>
                         </div>
-
+    
                         <div class="form-section">
                             <h3>🍽️ Food Habits</h3>
                             <select name="food_type" required>
@@ -52,13 +63,13 @@ export function initializeRoutes() {
                                 <option value="reusable">Reusable</option>
                             </select>
                         </div>
-
+    
                         <div class="form-section">
                             <h3>♻️ Recyclable Items</h3>
                             <input type="number" name="pages_used" placeholder="Pages Used per Day" min="0">
                             <input type="number" name="reusable_items" placeholder="Reusable Items Used per Day" min="0">
                         </div>
-
+    
                         <div class="form-section">
                             <h3>🌱 Lifestyle</h3>
                             <div class="radio-group">
@@ -80,13 +91,13 @@ export function initializeRoutes() {
                                 </div>
                             </div>
                         </div>
-
+    
                         <div class="form-section">
                             <h3>✈️ Travel</h3>
                             <input type="number" name="flights_per_month" placeholder="Flights per Month" min="0">
                             <input type="number" name="train_trips_per_month" placeholder="Train Trips per Month" min="0">
                         </div>
-
+    
                         <button type="submit" class="submit-btn">Track My Carbon Footprint</button>
                     </form>
                     <div id="resultContainer"></div>
@@ -155,33 +166,8 @@ export function initializeRoutes() {
                     color: #2c3e50;
                     margin-bottom: 30px;
                 }
-                #resultContainer {
-                    margin-top: 20px;
-                    padding: 20px;
-                    background: #e8f5e9;
-                    border-radius: 8px;
-                    border: 1px solid #c8e6c9;
-                }
-                #resultContainer h3 {
-                    color: #2e7d32;
-                    margin-top: 0;
-                }
-                #resultContainer p {
-                    font-size: 16px;
-                    line-height: 1.6;
-                    margin: 10px 0;
-                }
-                .error-message {
-                    color: #dc3545;
-                    padding: 10px;
-                    background: #ffeef0;
-                    border: 1px solid #ffdce0;
-                    border-radius: 4px;
-                    margin-top: 10px;
-                }
-            </style>
-        `;
-
+            </style>`;
+    
         document.getElementById('carbonForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             const form = e.currentTarget as HTMLFormElement;
@@ -240,6 +226,7 @@ export function initializeRoutes() {
             }
         });
     });
+    
 
     page.start();
 }
